@@ -20,24 +20,24 @@ from termcolor import colored
   [ VARIABLES GLOBALES ]
 """
 # Principal
-CARPETA_ALMACENAJE = "constancias/"
+CARPETA_ALMACENAJE = "constancias/" # Nombre de la carpeta donde se almacenarán las constancias generadas
 # Nombre del alumno
-NOMBRE_X = 78
-NOMBRE_Y = 337
-NOMBRE_RGB = [255, 0, 0] # Números entre 0 y 255
-NOMBRE_FONT = "Helvetica"
-NOMBRE_FONT_ARCHIVO = ""
-NOMBRE_FONT_SIZE = 30
+NOMBRE_X = "centrado"       # Número de la posición X o la palabra "centrado" Ej: 78 o "centrado"
+NOMBRE_Y = 337              # Número de la posición Y 
+NOMBRE_RGB = [56, 162, 186] # Números entre 0 y 255 Ej: [56, 162, 186]
+NOMBRE_FONT = "Helvetica"   # Nombre de la tipografía a utilizar
+NOMBRE_FONT_ARCHIVO = ""    # Nombre del archivo a utilizar, debe ser extensión .ttf Ej: OpenSans.ttf (Opcional)
+NOMBRE_FONT_SIZE = 30       # Tamaño de la tipografía
 # Folio
-FOLIO_INICIAL = 1
+FOLIO_INICIAL = 1           # Número inicial a utilizar 
+FOLIO_DIGITS = 2            # Número de digitos a mostrar Ej: 3 = 001
+FOLIO_X = "centrado"        # Número de la posición X o la palabra "centrado" Ej: 235 o "centrado"
+FOLIO_Y = 7                 # Número de la posición Y
+FOLIO_RGB = [0, 0, 0]       # Números entre 0 y 255 Ej: [56, 162, 186]
+FOLIO_FONT = "Helvetica"    # Nombre de la tipografía a utilizar
+FOLIO_FONT_ARCHIVO = ""     # Nombre del archivo a utilizar, debe ser extensión .ttf Ej: OpenSans.ttf (Opcional)
+FOLIO_FONT_SIZE = 10        # Tamaño de la tipografía
 folio_actual = FOLIO_INICIAL
-FOLIO_ZEROS = 0
-FOLIO_X = 0
-FOLIO_Y = 0
-FOLIO_RGB = [0, 0, 0] # Números entre 0 y 255
-FOLIO_FONT = "Helvetica"
-FOLIO_FONT_ARCHIVO = ""
-FOLIO_FONT_SIZE = 10
 
 """ 
  [ FUNCIONES ]
@@ -76,7 +76,7 @@ def create_constancy(args, name=""):
   # Crear pdf a planchar en la plantilla
   canvas = Canvas(packet, pagesize=letter)
   # Configurar texto del nombre
-  color = Color(NOMBRE_RGB[0], NOMBRE_RGB[1], NOMBRE_RGB[2])
+  color = Color(NOMBRE_RGB[0] / 255, NOMBRE_RGB[1] / 255, NOMBRE_RGB[2] / 255)
   if type(NOMBRE_FONT_ARCHIVO) == str and exists(NOMBRE_FONT_ARCHIVO):
     registerFont(TTFont(NOMBRE_FONT, NOMBRE_FONT_ARCHIVO))
   canvas.setFillColor(color)
@@ -85,13 +85,22 @@ def create_constancy(args, name=""):
   except:
     show_error("Tipografía de nombre inválida.")
     exit()
+  # Obtener coordenadas si es texto centrado
+  nombre_x = NOMBRE_X
+  if type(NOMBRE_X) == str:
+    if str(NOMBRE_X).lower() == "centrado":
+      page_width = template.getPage(0).mediaBox[2]
+      text_width = stringWidth(name, NOMBRE_FONT, NOMBRE_FONT_SIZE)
+      nombre_x = (page_width - text_width) / 2
+    else:
+      nombre_x = 0
   # Planchar nombre del estudiante
-  canvas.drawString(NOMBRE_X, NOMBRE_Y, name)
+  canvas.drawString(nombre_x, NOMBRE_Y, name)
   # Chechar si es necesario planchar folio
   if args.folio:
-    folio = args.folio + "-" + str(folio_actual).zfill(FOLIO_ZEROS)
+    folio = args.folio + "-" + str(folio_actual).zfill(FOLIO_DIGITS)
     # Configurar folio a planchar en la plantilla
-    color = Color(FOLIO_RGB[0], FOLIO_RGB[1], FOLIO_RGB[2])
+    color = Color(FOLIO_RGB[0] / 255, FOLIO_RGB[1] / 255, FOLIO_RGB[2] / 255)
     if type(FOLIO_FONT_ARCHIVO) == str and exists(FOLIO_FONT_ARCHIVO):
       registerFont(TTFont(FOLIO_FONT, FOLIO_FONT_ARCHIVO))
     canvas.setFillColor(color)
@@ -100,8 +109,17 @@ def create_constancy(args, name=""):
     except:
       show_error("Tipografía de folio inválida.")
       exit()
+    # Obtener coordenadas si es texto centrado
+    folio_x = FOLIO_X
+    if type(FOLIO_X) == str:
+      if str(FOLIO_X).lower() == "centrado":
+        page_width = template.getPage(0).mediaBox[2]
+        text_width = stringWidth(folio, FOLIO_FONT, FOLIO_FONT_SIZE)
+        folio_x = (page_width - text_width) / 2
+      else:
+        folio_x = 0
     # Planchar folio
-    canvas.drawString(FOLIO_X, FOLIO_Y, folio)
+    canvas.drawString(folio_x, FOLIO_Y, folio)
     folio_actual += 1
   # Guardar cambios
   canvas.save()
