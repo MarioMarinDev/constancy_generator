@@ -44,7 +44,7 @@ folio_actual = FOLIO_INICIAL
 """
 # Mostrar un error
 def show_error(message="Desconocido"):
-  print(colored("Error: " + message, "red"))
+  print(colored("Error: " + message + " ❌", "red"))
 
 # Validación de datos
 def validate_flags(args):
@@ -170,4 +170,4 @@ if len(names) <= 0 or (len(names) == 1 and names[0] == ""):
 for name in names:
   create_constancy(args, name)
   
-print(colored("¡Finalizado! :D", "green"))
+print(colored("¡Finalizado! :D ✅", "green"))
